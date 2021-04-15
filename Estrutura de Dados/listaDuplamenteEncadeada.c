@@ -166,7 +166,8 @@ List* removeStart(List *list)
 
 List* removeMiddle(List *list)
 {
-    int pos,count = 1;
+    int pos,count,value;
+    ListItem *pointer;
     printf("REMOVENDO DA POSIÇÃO K: \n");
     if(list->start == NULL) {
         printf("Impossível remover. Lista vazia!");
@@ -178,7 +179,25 @@ List* removeMiddle(List *list)
             fflush(stdin);
             scanf("%i",&pos);
             if(pos > 0) {
-                return list;
+                printf("Digite um valor para inserir na posição %i da lista: ",pos);
+                fflush(stdin);
+                scanf("%i", &value);
+
+                count = 0;
+                pointer = list->start;
+                while(pointer != list->end && count < pos) {
+                    count++;
+                    pointer = pointer->next;
+                }
+                if(count == pos) {
+                    pointer->prev->next = pointer->next;
+                    pointer->next->prev = pointer->prev;
+                    free(pointer);
+                    return list;
+                }
+                else {
+                    printf("\nImpossível inserir, posição inválida. Tente novamente!\n");
+                }
             }
             else {
                 printf("\nNúmero inválido. Tente novamente!\n");
@@ -210,7 +229,8 @@ List* removeEnd(List *list)
 
 void getPosValue(List *list)
 {
-    int pos,current,count = 0;
+    int pos,count = 0;
+    ListItem *pointer;
     printf("RECUPERANDO DA POSIÇÃO K: \n");
     if(list->start== NULL) {
         printf("Impossível recuperar. Lista vazia!!");
@@ -220,10 +240,19 @@ void getPosValue(List *list)
         fflush(stdin);
         scanf("%i",&pos);
         if(pos >= 0){
-            printf("O elemento da posição \n");
+            while(pointer != list->end && count < pos) {
+                pointer = pointer->next;
+                count++;
+            }
+            if(pos == count)
+                printf("O elemento da posição %i é: %i\n",pos,pointer->value);
+            else if(pos == count + 1)//último 
+                printf("O elemento da posição %i é: %i\n",pos,list->end->value);
+            else 
+                printf("Posição inválida!!\n");
         }
         else {
-            printf("Posição inválida!! Tente novamente\n");
+            printf("Posição inválida!!\n");
         }
         enterToContinue();
     }
@@ -247,7 +276,8 @@ void getQuantity(List *list)
 
 void searchByValue(List *list)
 {
-    int value,found = 0,pos,count = 0;
+    int value,count = 0,found = 0;
+    ListItem *pointer;
     printf("BUSCANDO POSIÇÃO POR VALOR: \n");
     if(list->start == NULL) {
         printf("Impossível buscar. Lista vazia!!");
@@ -257,6 +287,23 @@ void searchByValue(List *list)
         printf("Digite o valor para ser buscado: ");
         fflush(stdin);
         scanf("%i",&value);
+        pointer = list->start;
+        while(pointer != list->end) {
+            if(pointer->value == value){
+                printf("Valor encontrado na posição: %i!\n",count);
+                found++;
+            }
+            pointer = pointer->next;
+            count++;
+        }
+        if(pointer->value == value) {
+            printf("Valor encontrado na posição: %i!\n",count+1);
+            found++;
+        }
+
+        if(found == 0) {
+            printf("Nenhum item com esse valor encontrado!!!!\n");
+        }
         enterToContinue();
     }
 
