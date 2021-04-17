@@ -166,7 +166,7 @@ List* removeStart(List *list)
 
 List* removeMiddle(List *list)
 {
-    int pos,count,value;
+    int pos,count;
     ListItem *pointer;
     printf("REMOVENDO DA POSIÇÃO K: \n");
     if(list->start == NULL) {
@@ -179,10 +179,6 @@ List* removeMiddle(List *list)
             fflush(stdin);
             scanf("%i",&pos);
             if(pos > 0) {
-                printf("Digite um valor para inserir na posição %i da lista: ",pos);
-                fflush(stdin);
-                scanf("%i", &value);
-
                 count = 0;
                 pointer = list->start;
                 while(pointer != list->end && count < pos) {
@@ -240,14 +236,15 @@ void getPosValue(List *list)
         fflush(stdin);
         scanf("%i",&pos);
         if(pos >= 0){
-            while(pointer != list->end && count < pos) {
+            pointer = list->start;
+            while(pointer->next != NULL && count < pos) {
                 pointer = pointer->next;
                 count++;
             }
             if(pos == count)
                 printf("O elemento da posição %i é: %i\n",pos,pointer->value);
-            else if(pos == count + 1)//último 
-                printf("O elemento da posição %i é: %i\n",pos,list->end->value);
+            // else if(pos == count + 1)//último 
+            //     printf("O elemento da posição %i é: %i\n",pos,list->end->value);
             else 
                 printf("Posição inválida!!\n");
         }
@@ -297,7 +294,7 @@ void searchByValue(List *list)
             count++;
         }
         if(pointer->value == value) {
-            printf("Valor encontrado na posição: %i!\n",count+1);
+            printf("Valor encontrado na posição: %i!\n",count);
             found++;
         }
 
@@ -363,16 +360,15 @@ int main() {
                 break;
             case 'G': 
                 printHeader();
-                searchByValue(list);
+                getPosValue(list);
                 break;
             case 'H': 
                 printHeader();
                 getQuantity(list);
-                enterToContinue();
                 break;
              case 'I': 
                 printHeader();
-                getPosValue(list);
+                searchByValue(list);
                 break;
              case 'J': 
                 printHeader();
