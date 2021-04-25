@@ -18,7 +18,7 @@ typedef struct queue Queue;
 void printHeader()
 {
     system("@cls||clear");
-    printf("*** LISTA DUPLAMENTE ENCADEADA *** \n");
+    printf("*** FILA DINÂMICA *** \n");
 }
 
 void enterToContinue()
@@ -32,14 +32,21 @@ void enterToContinue()
 char mainMenu()
 {
 	printf ("\n** MENU **\n");
-    printf ("[A] Colocar: [enQueue] \n");
+    printf ("[A] Inserir: [enQueue] \n");
 	printf ("[B] Retirar: [deQueue] \n");
-	printf ("[C] Consultar último: \n");
-	printf ("[C] (Verificar expressão regular): \n");
-	printf ("[ESC] Voltar: \n");
+	printf ("[C] Esvaziar: \n");
+	printf ("[D] Verificar se está vazia: \n");
+	printf ("[ESC] Sair: \n");
 	printf ("Digite a opção desejada: \n");
 	
 	return (toupper(getchar()));
+}
+
+Queue* initializeQueue() 
+{
+    Queue *queue = (Queue*) malloc(sizeof(Queue));
+    queue->start = queue->end = NULL;
+    return queue;
 }
 
 QueueItem* newQueueItem(int value) {
@@ -50,71 +57,96 @@ QueueItem* newQueueItem(int value) {
     return info;
 }
 
-Queue* enQueue(Queue *list)
-{
-    int value;
-
-    printf("INSERINDO NO INÍCIO!\n");
-    printf("Digite um valor para inserir no ínicio da Fila:  ");
-    fflush(stdin);
-    scanf("%i", &value);
-    if(list->start == NULL) {
-        QueueItem *item = newQueueItem(value);
-        list->start = list->end = item;
-    }
-    else {
-        QueueItem *item = newQueueItem(value);
-        list->start->prev = item;
-        item->next = list->start;
-        list->start = item;
-    }
-    return list;
+int isEmpty(Queue *queue) {
+    return queue->start == NULL;
 }
 
-Queue* deQueue(Queue *list)
-{
-    int value;
-
-    printf("INSERINDO NO INÍCIO!\n");
-    printf("Digite um valor para inserir no ínicio da Fila:  ");
-    fflush(stdin);
-    scanf("%i", &value);
-    if(list->start == NULL) {
-        QueueItem *item = newQueueItem(value);
-        list->start = list->end = item;
-    }
-    else {
-        QueueItem *item = newQueueItem(value);
-        list->start->prev = item;
-        item->next = list->start;
-        list->start = item;
-    }
-    return list;
+void enQueue(Queue *queue,int value){
+    QueueItem *item = newQueueItem(value);
+    if(isEmpty(queue) == 1) 
+        queue->start = item;    
+    else 
+        queue->end->next = item;    
+    queue->end = item;
 }
 
+int deQueue(Queue *queue, char message[40])
+{
+    QueueItem *pointer;
+    int value;
 
+    printf("RETIRANDO DA FILA!\n");
+    if(isEmpty(queue) == 1) {
+        printf("Impossível retirar, fila vazia!\n");
+        strcpy(message,"Erro ao retirar\n");
+        enterToContinue();
+        return 0;
+    } else {
+        pointer = queue->start;
+        value = pointer->value;
+        queue->start = pointer->next;
+        if(queue->start == NULL)    
+            queue->end = NULL;
+        free(pointer);
+        strcpy(message,"Retirado da fila com sucesso!\n");
+        return value;
+    }
+}
+
+Queue* freeAll(Queue *queue) {
+    QueueItem *pointer;
+    if(isEmpty(queue) != 1) {
+        pointer = queue->start;
+        while(pointer->next != NULL) {
+            QueueItem *item = pointer;
+            pointer = pointer->next;
+            free(item);
+        }
+        free(pointer);
+        queue->start = queue->end = NULL;
+    }
+    return queue;
+}
 
 int main() {
-    char op;
-    Queue *queue = (Queue*) malloc(sizeof(Queue));
-    queue->start = queue->end = NULL;
+    int value;
+    char op, message[40] = "";
+    Queue *queue = initializeQueue();
     
     do{
         printHeader();
+        printf("\n%s",message);
         op = mainMenu();
         switch (op)
         {
             case 'A': 
                 printHeader();
-                queue = insertStart(queue);
+                printf("INSERINDO NA FILA!\n");
+                printf("Digite um valor para inserir no ínicio da Fila:  ");
+                fflush(stdin);
+                scanf("%i", &value);
+                enQueue(queue,value);
+                strcpy(message,"Inserido na fila com sucesso!\n");
                 break;
             case 'B': 
                 printHeader();
-                queue = insertStart(queue);
+                value = deQueue(queue,message);
                 break;
-            case 'C': 
+            case 'C':
                 printHeader();
-                queue = insertStart(queue);
+                queue = freeAll(queue);
+                strcpy(message,"Fila esvaziada com sucesso!\n");
+                break;
+            case 'D':
+                printHeader();
+                if(isEmpty(queue) == 1)
+                    strcpy(message," ");
+                else 
+                    strcpy(message," não ");
+
+                printf("A fila%sestá vazia!!\n", message);
+                enterToContinue();
+                strcpy(message,"");
                 break;
         }
 
